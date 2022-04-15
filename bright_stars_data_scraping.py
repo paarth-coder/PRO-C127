@@ -2,13 +2,14 @@ from bs4 import BeautifulSoup as bs
 import requests
 import pandas as pd
 
-# IMP NOTE: The page at the given URL is maintained by "wikipedia", which might be updated in future, hence the current might be different.
-# Perform data scraping from scratch with HTML Tags/Class Names!
-
+# URLto Scrape Data
 bright_stars_url = 'https://en.wikipedia.org/wiki/List_of_brightest_stars_and_other_record_stars'
 
+# Get Page
 page = requests.get(bright_stars_url)
+print(page)
 
+# Parse Page
 soup = bs(page.text,'html.parser')
 
 star_table = soup.find('table')
@@ -19,6 +20,7 @@ for tr in table_rows:
     td = tr.find_all('td')
     row = [i.text.rstrip() for i in td]
     temp_list.append(row)
+
 
 Star_names = []
 Distance =[]
@@ -32,8 +34,10 @@ for i in range(1,len(temp_list)):
     Mass.append(temp_list[i][5])
     Radius.append(temp_list[i][6])
     Lum.append(temp_list[i][7])
-    
-df2 = pd.DataFrame(list(zip(Star_names,Distance,Mass,Radius,Lum)),columns=['Star_name','Distance','Mass','Radius','Luminosity'])
+
+# Convert to CSV
+headers = ['Star_name','Distance','Mass','Radius','Luminosity']    
+df2 = pd.DataFrame(list(zip(Star_names,Distance,Mass,Radius,Lum)),columns=headers)
 print(df2)
 
-df2.to_csv('bright_stars.csv')
+df2.to_csv('bright_stars.csv', index=True, index_label="id")
